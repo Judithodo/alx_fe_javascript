@@ -7,15 +7,15 @@ let quotes = [
     { text: "The best way to predict your future is to create it.", category: "Motivation" }
 ];
 
-// Function to display a random quote
+// Function to display a random quote using innerHTML
 function displayRandomQuote() {
     // Get a random quote from the array
     const randomIndex = Math.floor(Math.random() * quotes.length);
     const randomQuote = quotes[randomIndex];
 
-    // Get the quote display element and update its content
+    // Get the quote display element and update its content using innerHTML
     const quoteElement = document.getElementById("quoteDisplay");
-    quoteElement.textContent = `"${randomQuote.text}" - ${randomQuote.category}`;
+    quoteElement.innerHTML = `"${randomQuote.text}" <em>- ${randomQuote.category}</em>`; // Using innerHTML for HTML formatting
 }
 
 // Function to handle adding a new quote
@@ -46,3 +46,4 @@ document.getElementById("addQuoteButton").addEventListener("click", addQuote);
 
 // Show a random quote when the page loads
 window.onload = displayRandomQuote;
+
