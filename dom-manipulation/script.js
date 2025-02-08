@@ -84,3 +84,67 @@ window.onload = function () {
     showRandomQuote();
     createAddQuoteForm(); // Create the form to add new quotes dynamically
 };
+
+
+// IMPLEMENTING WEB STORAGE AND JSON HANDLING
+// Initial setup: Create an empty array for quotes
+let quotes = [];
+
+// Save quotes to local storage
+function saveQuotes() {
+    localStorage.setItem('quotes', JSON.stringify(quotes));
+}
+
+// Load quotes from local storage
+function loadQuotes() {
+    const storedQuotes = localStorage.getItem('quotes');
+    if (storedQuotes) {
+        quotes = JSON.parse(storedQuotes);
+    }
+}
+
+// Export quotes to JSON
+function exportToJsonFile() {
+    const quotesJson = JSON.stringify(quotes);
+    const blob = new Blob([quotesJson], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'quotes.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// Import quotes from JSON file
+function importFromJsonFile(event) {
+    const fileReader = new FileReader();
+    fileReader.onload = function(event) {
+        const importedQuotes = JSON.parse(event.target.result);
+        quotes.push(...importedQuotes);
+        saveQuotes(); // Save the imported quotes to local storage
+        displayQuotes(); // Update the quotes displayed on the page
+        alert('Quotes imported successfully!');
+    };
+    fileReader.readAsText(event.target.files[0]);
+}
+
+// Event listener for importing quotes
+document.getElementById('importFile').addEventListener('change', importFromJsonFile);
+
+// Load quotes from local storage when the page loads
+window.onload = function () {
+    loadQuotes();
+    displayQuotes();  // Display the quotes on the page
+};
+
+// Optional: Using session storage to remember the last viewed quote
+function saveLastViewedQuoteIndex(index) {
+    sessionStorage.setItem('lastViewedQuoteIndex', index);
+}
+
+function loadLastViewedQuoteIndex() {
+    return sessionStorage.getItem('lastViewedQuoteIndex');
+}
