@@ -51,16 +51,19 @@ window.onload = displayRandomQuote;
 
 let quotes = JSON.parse(localStorage.getItem("quotes")) || [];
 
+        // Add a new quote to the quotes array and save to localStorage
         function addQuote(quote) {
             quotes.push(quote);
             saveQuotes();
             displayQuotes();
         }
 
+        // Save the current quotes array to localStorage
         function saveQuotes() {
             localStorage.setItem("quotes", JSON.stringify(quotes));
         }
 
+        // Display the quotes in the HTML container
         function displayQuotes() {
             const quotesContainer = document.getElementById("quotesContainer");
             quotesContainer.innerHTML = "";
@@ -71,6 +74,7 @@ let quotes = JSON.parse(localStorage.getItem("quotes")) || [];
             });
         }
 
+        // Export quotes to a JSON file
         function exportToJson() {
             const jsonBlob = new Blob([JSON.stringify(quotes)], { type: "application/json" });
             const link = document.createElement("a");
@@ -79,18 +83,23 @@ let quotes = JSON.parse(localStorage.getItem("quotes")) || [];
             link.click();
         }
 
+        // Import quotes from a JSON file
         function importFromJsonFile(event) {
             const fileReader = new FileReader();
             fileReader.onload = function(event) {
                 const importedQuotes = JSON.parse(event.target.result);
-                quotes.push(...importedQuotes);
-                saveQuotes();
-                displayQuotes();
+                quotes.push(...importedQuotes); // Add imported quotes to the current array
+                saveQuotes(); // Save updated quotes to localStorage
+                displayQuotes(); // Update the UI with the new quotes
                 alert('Quotes imported successfully!');
             };
             fileReader.readAsText(event.target.files[0]);
         }
 
+        // Initialize the app when the page is loaded
         window.onload = function() {
             displayQuotes();
+
+            // Bind the export function to the export button
+            document.getElementById("exportButton").addEventListener("click", exportToJson);
         };
