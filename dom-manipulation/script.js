@@ -132,6 +132,9 @@ window.onload = function() {
     const lastSelectedCategory = localStorage.getItem('selectedCategory') || 'all';
     document.getElementById('categoryFilter').value = lastSelectedCategory;
     displayQuotes(lastSelectedCategory); // Display quotes based on saved category
+
+    // Create and append the "Add New Quote" form dynamically
+    createAddQuoteForm();
 };
 
 // Event listener for the "Show New Quote" button
@@ -139,3 +142,31 @@ document.getElementById('newQuote').addEventListener('click', showRandomQuote);
 
 // Start syncing with the server
 syncQuotes();
+
+// Function to create and append the "Add New Quote" form dynamically
+function createAddQuoteForm() {
+    const formContainer = document.createElement('div');
+    
+    // Create and append the text input for the new quote
+    const newQuoteTextInput = document.createElement('input');
+    newQuoteTextInput.id = 'newQuoteText';
+    newQuoteTextInput.type = 'text';
+    newQuoteTextInput.placeholder = 'Enter a new quote';
+    formContainer.appendChild(newQuoteTextInput);
+
+    // Create and append the category input for the new quote
+    const newQuoteCategoryInput = document.createElement('input');
+    newQuoteCategoryInput.id = 'newQuoteCategory';
+    newQuoteCategoryInput.type = 'text';
+    newQuoteCategoryInput.placeholder = 'Enter quote category';
+    formContainer.appendChild(newQuoteCategoryInput);
+
+    // Create and append the button to add the quote
+    const addQuoteButton = document.createElement('button');
+    addQuoteButton.textContent = 'Add Quote';
+    addQuoteButton.onclick = addQuote;
+    formContainer.appendChild(addQuoteButton);
+
+    // Append the form to the body or a specific container
+    document.body.appendChild(formContainer);
+}
