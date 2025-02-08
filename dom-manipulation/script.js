@@ -47,3 +47,50 @@ document.getElementById("addQuoteButton").addEventListener("click", addQuote);
 // Show a random quote when the page loads
 window.onload = displayRandomQuote;
 
+
+
+let quotes = JSON.parse(localStorage.getItem("quotes")) || [];
+
+        function addQuote(quote) {
+            quotes.push(quote);
+            saveQuotes();
+            displayQuotes();
+        }
+
+        function saveQuotes() {
+            localStorage.setItem("quotes", JSON.stringify(quotes));
+        }
+
+        function displayQuotes() {
+            const quotesContainer = document.getElementById("quotesContainer");
+            quotesContainer.innerHTML = "";
+            quotes.forEach(quote => {
+                const quoteElement = document.createElement("div");
+                quoteElement.textContent = quote;
+                quotesContainer.appendChild(quoteElement);
+            });
+        }
+
+        function exportToJson() {
+            const jsonBlob = new Blob([JSON.stringify(quotes)], { type: "application/json" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(jsonBlob);
+            link.download = "quotes.json";
+            link.click();
+        }
+
+        function importFromJsonFile(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = function(event) {
+                const importedQuotes = JSON.parse(event.target.result);
+                quotes.push(...importedQuotes);
+                saveQuotes();
+                displayQuotes();
+                alert('Quotes imported successfully!');
+            };
+            fileReader.readAsText(event.target.files[0]);
+        }
+
+        window.onload = function() {
+            displayQuotes();
+        };
