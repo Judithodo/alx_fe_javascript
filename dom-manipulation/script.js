@@ -217,17 +217,12 @@ function loadQuotes() {
   }
 }
 
-// Function to populate categories dynamically
+// Function to populate categories dynamically using `map` method
 function populateCategories() {
   const categoryFilter = document.getElementById('categoryFilter');
-  const categories = ['all'];
-
-  // Collect unique categories from the quotes array
-  quotes.forEach(quote => {
-    if (!categories.includes(quote.category)) {
-      categories.push(quote.category);
-    }
-  });
+  
+  // Extract unique categories using `map` and `Set`
+  const categories = ['all', ...[...new Set(quotes.map(quote => quote.category))]];
 
   // Clear the existing options
   categoryFilter.innerHTML = '';
@@ -333,4 +328,3 @@ window.onload = function () {
   document.getElementById('categoryFilter').value = lastSelectedCategory;
   filterQuotes();  // Display quotes based on last selected category
 };
-
