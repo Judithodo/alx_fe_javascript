@@ -90,12 +90,12 @@ window.onload = function () {
 // Initial setup: Create an empty array for quotes
 let quotes = [];
 
-// Save quotes to local storage
+// Function to save quotes to local storage
 function saveQuotes() {
     localStorage.setItem('quotes', JSON.stringify(quotes));
 }
 
-// Load quotes from local storage
+// Function to load quotes from local storage
 function loadQuotes() {
     const storedQuotes = localStorage.getItem('quotes');
     if (storedQuotes) {
@@ -103,7 +103,7 @@ function loadQuotes() {
     }
 }
 
-// Export quotes to JSON
+// Function to export quotes to a JSON file
 function exportToJsonFile() {
     const quotesJson = JSON.stringify(quotes);
     const blob = new Blob([quotesJson], { type: 'application/json' });
@@ -118,7 +118,7 @@ function exportToJsonFile() {
     URL.revokeObjectURL(url);
 }
 
-// Import quotes from JSON file
+// Function to import quotes from a JSON file
 function importFromJsonFile(event) {
     const fileReader = new FileReader();
     fileReader.onload = function(event) {
@@ -129,6 +129,15 @@ function importFromJsonFile(event) {
         alert('Quotes imported successfully!');
     };
     fileReader.readAsText(event.target.files[0]);
+}
+
+// Check if the "Export Quotes" button exists in the DOM
+const exportQuotesButton = document.querySelector('button[onclick="exportToJsonFile()"]');
+
+if (exportQuotesButton) {
+    console.log('Export Quotes button exists!');
+} else {
+    console.log('Export Quotes button is missing from index.html');
 }
 
 // Event listener for importing quotes
@@ -148,3 +157,46 @@ function saveLastViewedQuoteIndex(index) {
 function loadLastViewedQuoteIndex() {
     return sessionStorage.getItem('lastViewedQuoteIndex');
 }
+
+// Function to display quotes on the page
+function displayQuotes() {
+    const quoteDisplay = document.getElementById('quoteDisplay');
+    quoteDisplay.innerHTML = '';  // Clear existing quotes
+    
+    quotes.forEach((quote, index) => {
+        const quoteDiv = document.createElement('div');
+        quoteDiv.textContent = `"${quote.text}" - ${quote.category}`;
+        quoteDisplay.appendChild(quoteDiv);
+    });
+}
+
+// Event listener for the "Show New Quote" button
+document.getElementById('newQuote').addEventListener('click', displayRandomQuote);
+
+// Function to show a random quote
+function displayRandomQuote() {
+    if (quotes.length > 0) {
+        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        alert(`"${randomQuote.text}" - ${randomQuote.category}`);
+    }
+}
+
+// Function to add a new quote
+function addQuote() {
+    const newQuoteText = document.getElementById('newQuoteText').value;
+    const newQuoteCategory = document.getElementById('newQuoteCategory').value;
+
+    if (newQuoteText && newQuoteCategory) {
+        const newQuote = {
+            text: newQuoteText,
+            category: newQuoteCategory
+        };
+        quotes.push(newQuote);
+        saveQuotes(); // Save new quote to local storage
+        displayQuotes(); // Update displayed quotes
+        alert('New quote added!');
+    } else {
+        alert('Please enter both quote text and category!');
+    }
+}
+
