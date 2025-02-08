@@ -331,7 +331,7 @@ window.onload = function () {
 
 
 // Syncing Data with Server and Implementing Conflict Resolution
-let quotes = [];
+let quotes = []; 
 
 // Simulate server interaction using JSONPlaceholder
 const SERVER_URL = 'https://jsonplaceholder.typicode.com/posts';
@@ -372,7 +372,9 @@ function syncQuotes(serverQuotes) {
     // Save updated quotes to local storage
     saveQuotes();
     displayQuotes(quotes);
-    alert('Quotes have been updated from the server!');
+    
+    // Notify user that quotes have been synced with the server
+    alert('Quotes synced with server!');
   }
 }
 
@@ -466,3 +468,4 @@ window.onload = function () {
   loadQuotes();
   displayQuotes(quotes);
 };
+
