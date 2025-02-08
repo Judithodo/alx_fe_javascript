@@ -49,57 +49,55 @@ window.onload = displayRandomQuote;
 
 
 
+// Initialize the quotes array from localStorage or set to an empty array
 let quotes = JSON.parse(localStorage.getItem("quotes")) || [];
 
-        // Add a new quote to the quotes array and save to localStorage
-        function addQuote(quote) {
-            quotes.push(quote);
-            saveQuotes();
-            displayQuotes();
-        }
+// Add a new quote to the quotes array and save to localStorage
+function addQuote(quote) {
+    quotes.push(quote);
+    saveQuotes();
+    displayQuotes();
+}
 
-        // Save the current quotes array to localStorage
-        function saveQuotes() {
-            localStorage.setItem("quotes", JSON.stringify(quotes));
-        }
+// Save the current quotes array to localStorage
+function saveQuotes() {
+    localStorage.setItem("quotes", JSON.stringify(quotes));
+}
 
-        // Display the quotes in the HTML container
-        function displayQuotes() {
-            const quotesContainer = document.getElementById("quotesContainer");
-            quotesContainer.innerHTML = "";
-            quotes.forEach(quote => {
-                const quoteElement = document.createElement("div");
-                quoteElement.textContent = quote;
-                quotesContainer.appendChild(quoteElement);
-            });
-        }
+// Display the quotes in the HTML container
+function displayQuotes() {
+    const quotesContainer = document.getElementById("quotesContainer");
+    quotesContainer.innerHTML = "";
+    quotes.forEach(quote => {
+        const quoteElement = document.createElement("div");
+        quoteElement.textContent = quote;
+        quotesContainer.appendChild(quoteElement);
+    });
+}
 
-        // Export quotes to a JSON file
-        function exportToJson() {
-            const jsonBlob = new Blob([JSON.stringify(quotes)], { type: "application/json" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(jsonBlob);
-            link.download = "quotes.json";
-            link.click();
-        }
+// Export quotes to a JSON file
+function exportToJson() {
+    const jsonBlob = new Blob([JSON.stringify(quotes)], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(jsonBlob);
+    link.download = "quotes.json";
+    link.click();
+}
 
-        // Import quotes from a JSON file
-        function importFromJsonFile(event) {
-            const fileReader = new FileReader();
-            fileReader.onload = function(event) {
-                const importedQuotes = JSON.parse(event.target.result);
-                quotes.push(...importedQuotes); // Add imported quotes to the current array
-                saveQuotes(); // Save updated quotes to localStorage
-                displayQuotes(); // Update the UI with the new quotes
-                alert('Quotes imported successfully!');
-            };
-            fileReader.readAsText(event.target.files[0]);
-        }
+// Import quotes from a JSON file
+function importFromJsonFile(event) {
+    const fileReader = new FileReader();
+    fileReader.onload = function(event) {
+        const importedQuotes = JSON.parse(event.target.result);
+        quotes.push(...importedQuotes); // Add imported quotes to the current array
+        saveQuotes(); // Save updated quotes to localStorage
+        displayQuotes(); // Update the UI with the new quotes
+        alert('Quotes imported successfully!');
+    };
+    fileReader.readAsText(event.target.files[0]);
+}
 
-        // Initialize the app when the page is loaded
-        window.onload = function() {
-            displayQuotes();
-
-            // Bind the export function to the export button
-            document.getElementById("exportButton").addEventListener("click", exportToJson);
-        };
+// Initialize the app when the page is loaded
+window.onload = function() {
+    displayQuotes();
+};
