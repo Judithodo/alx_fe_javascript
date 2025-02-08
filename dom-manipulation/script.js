@@ -1,10 +1,14 @@
 let quotes = JSON.parse(localStorage.getItem("quotes")) || [];
 
 // Display a random quote
-function showRandomQuote() {
+function displayRandomQuote() {
+    if (quotes.length === 0) {
+        document.getElementById('quoteDisplay').innerText = "No quotes available.";
+        return;
+    }
     const randomIndex = Math.floor(Math.random() * quotes.length);
     const randomQuote = quotes[randomIndex];
-    document.getElementById('quoteDisplay').innerText = `${randomQuote.text} - ${randomQuote.category}`;
+    document.getElementById('quoteDisplay').innerText = `"${randomQuote.text}" - ${randomQuote.category}`;
 }
 
 // Add a new quote to the array and update the DOM
@@ -87,7 +91,7 @@ function importFromJsonFile(event) {
 // Simulate server interaction
 const serverQuotesUrl = 'https://jsonplaceholder.typicode.com/posts';  // Placeholder URL
 
-function syncWithServer() {
+function fetchQuotesFromServer() {
     fetch(serverQuotesUrl)
         .then(response => response.json())
         .then(serverQuotes => {
@@ -111,13 +115,15 @@ function resolveConflicts(serverQuotes) {
     displayQuotes();
 }
 
+// Sync quotes with the server periodically
+function syncQuotes() {
+    setInterval(fetchQuotesFromServer, 30000); // Fetch every 30 seconds
+}
+
 // Notify users about data conflicts
 function showConflictNotification() {
     alert('Some of your data was updated due to server changes.');
 }
-
-// Simulate fetching data every 30 seconds
-setInterval(syncWithServer, 30000);
 
 // Initialize the app when the page is loaded
 window.onload = function() {
@@ -127,3 +133,9 @@ window.onload = function() {
     document.getElementById('categoryFilter').value = lastSelectedCategory;
     displayQuotes(lastSelectedCategory); // Display quotes based on saved category
 };
+
+// Event listener for the "Show New Quote" button
+document.getElementById('newQuote').addEventListener('click', displayRandomQuote);
+
+// Start syncing with the server
+syncQuotes();
