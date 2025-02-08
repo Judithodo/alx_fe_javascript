@@ -328,3 +328,98 @@ window.onload = function () {
   document.getElementById('categoryFilter').value = lastSelectedCategory;
   filterQuotes();  // Display quotes based on last selected category
 };
+
+
+// Syncing Data with Server and Implementing Conflict Resolution
+let quotes = [];
+
+// Simulate server interaction using JSONPlaceholder
+const SERVER_URL = 'https://jsonplaceholder.typicode.com/posts';
+
+// Fetch data from server (simulate server interaction)
+async function fetchQuotesFromServer() {
+  try {
+    const response = await fetch(SERVER_URL);
+    const serverQuotes = await response.json();
+    syncQuotes(serverQuotes);
+  } catch (error) {
+    console.error('Error fetching from server:', error);
+  }
+}
+
+// Periodically fetch new quotes every 5 minutes (300000ms)
+setInterval(fetchQuotesFromServer, 300000);
+
+// Sync local quotes with the server's data
+function syncQuotes(serverQuotes) {
+  if (serverQuotes.length > 0) {
+    const serverQuoteIds = serverQuotes.map(quote => quote.id);
+    const localQuoteIds = quotes.map(quote => quote.id);
+
+    // Compare local quotes with server quotes and resolve conflicts
+    serverQuotes.forEach(serverQuote => {
+      const localQuoteIndex = localQuoteIds.indexOf(serverQuote.id);
+
+      if (localQuoteIndex === -1) {
+        // If the quote doesn't exist locally, add it
+        quotes.push(serverQuote);
+      } else {
+        // If the quote exists locally, resolve the conflict by prioritizing server data
+        quotes[localQuoteIndex] = serverQuote;
+      }
+    });
+
+    // Save updated quotes to local storage
+    saveQuotes();
+    displayQuotes(quotes);
+    alert('Quotes have been updated from the server!');
+  }
+}
+
+// Function to save quotes to local storage
+function saveQuotes() {
+  localStorage.setItem('quotes', JSON.stringify(quotes));
+}
+
+// Function to load quotes from local storage
+function loadQuotes() {
+  const storedQuotes = localStorage.getItem('quotes');
+  if (storedQuotes) {
+    quotes = JSON.parse(storedQuotes);
+  }
+}
+
+// Function to display quotes on the page
+function displayQuotes(filteredQuotes) {
+  const quoteDisplay = document.getElementById('quoteDisplay');
+  quoteDisplay.innerHTML = ''; // Clear existing quotes
+
+  filteredQuotes.forEach(quote => {
+    const quoteDiv = document.createElement('div');
+    quoteDiv.textContent = `"${quote.text}" - ${quote.category}`;
+    quoteDisplay.appendChild(quoteDiv);
+  });
+}
+
+// Function to manually sync data from the server (button triggered)
+function manualSync() {
+  fetchQuotesFromServer();
+}
+
+// Event listener for "Show New Quote" button
+document.getElementById('newQuote').addEventListener('click', displayRandomQuote);
+
+// Function to display a random quote
+function displayRandomQuote() {
+  if (quotes.length > 0) {
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    alert(`"${randomQuote.text}" - ${randomQuote.category}`);
+  }
+}
+
+// Load quotes from local storage on page load
+window.onload = function () {
+  loadQuotes();
+  displayQuotes(quotes);
+};
+
