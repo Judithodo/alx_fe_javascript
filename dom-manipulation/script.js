@@ -87,118 +87,108 @@ window.onload = function () {
 
 
 // IMPLEMENTING WEB STORAGE AND JSON HANDLING
-// Initial setup: Create an empty array for quotes
 let quotes = [];
 
-// Function to save quotes to local storage
+// Save quotes to localStorage
 function saveQuotes() {
-    localStorage.setItem('quotes', JSON.stringify(quotes));
+  localStorage.setItem('quotes', JSON.stringify(quotes));
 }
 
-// Function to load quotes from local storage
+// Load quotes from localStorage
 function loadQuotes() {
-    const storedQuotes = localStorage.getItem('quotes');
-    if (storedQuotes) {
-        quotes = JSON.parse(storedQuotes);
-    }
-}
-
-// Function to export quotes to a JSON file
-function exportToJsonFile() {
-    const quotesJson = JSON.stringify(quotes);
-    const blob = new Blob([quotesJson], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'quotes.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-// Function to import quotes from a JSON file
-function importFromJsonFile(event) {
-    const fileReader = new FileReader();
-    fileReader.onload = function(event) {
-        const importedQuotes = JSON.parse(event.target.result);
-        quotes.push(...importedQuotes);
-        saveQuotes(); // Save the imported quotes to local storage
-        displayQuotes(); // Update the quotes displayed on the page
-        alert('Quotes imported successfully!');
-    };
-    fileReader.readAsText(event.target.files[0]);
-}
-
-// Check if the "Export Quotes" button exists in the DOM
-const exportQuotesButton = document.querySelector('button[onclick="exportToJsonFile()"]');
-
-if (exportQuotesButton) {
-    console.log('Export Quotes button exists!');
-} else {
-    console.log('Export Quotes button is missing from index.html');
-}
-
-// Event listener for importing quotes
-document.getElementById('importFile').addEventListener('change', importFromJsonFile);
-
-// Load quotes from local storage when the page loads
-window.onload = function () {
-    loadQuotes();
-    displayQuotes();  // Display the quotes on the page
-};
-
-// Optional: Using session storage to remember the last viewed quote
-function saveLastViewedQuoteIndex(index) {
-    sessionStorage.setItem('lastViewedQuoteIndex', index);
-}
-
-function loadLastViewedQuoteIndex() {
-    return sessionStorage.getItem('lastViewedQuoteIndex');
-}
-
-// Function to display quotes on the page
-function displayQuotes() {
-    const quoteDisplay = document.getElementById('quoteDisplay');
-    quoteDisplay.innerHTML = '';  // Clear existing quotes
-    
-    quotes.forEach((quote, index) => {
-        const quoteDiv = document.createElement('div');
-        quoteDiv.textContent = `"${quote.text}" - ${quote.category}`;
-        quoteDisplay.appendChild(quoteDiv);
-    });
-}
-
-// Event listener for the "Show New Quote" button
-document.getElementById('newQuote').addEventListener('click', displayRandomQuote);
-
-// Function to show a random quote
-function displayRandomQuote() {
-    if (quotes.length > 0) {
-        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-        alert(`"${randomQuote.text}" - ${randomQuote.category}`);
-    }
+  const storedQuotes = localStorage.getItem('quotes');
+  if (storedQuotes) {
+    quotes = JSON.parse(storedQuotes);
+    displayQuotes(quotes);
+  }
 }
 
 // Function to add a new quote
 function addQuote() {
-    const newQuoteText = document.getElementById('newQuoteText').value;
-    const newQuoteCategory = document.getElementById('newQuoteCategory').value;
+  const newQuoteText = document.getElementById('newQuoteText').value;
+  const newQuoteCategory = document.getElementById('newQuoteCategory').value;
 
-    if (newQuoteText && newQuoteCategory) {
-        const newQuote = {
-            text: newQuoteText,
-            category: newQuoteCategory
-        };
-        quotes.push(newQuote);
-        saveQuotes(); // Save new quote to local storage
-        displayQuotes(); // Update displayed quotes
-        alert('New quote added!');
-    } else {
-        alert('Please enter both quote text and category!');
-    }
+  if (!newQuoteText || !newQuoteCategory) {
+    alert('Please enter both quote text and category.');
+    return;
+  }
+
+  const newQuote = {
+    id: Date.now(), // Unique ID based on current timestamp
+    text: newQuoteText,
+    category: newQuoteCategory
+  };
+
+  // Add new quote to the array and save to localStorage
+  quotes.push(newQuote);
+  saveQuotes();
+
+  // Display updated quotes
+  displayQuotes(quotes);
+
+  // Clear the input fields
+  document.getElementById('newQuoteText').value = '';
+  document.getElementById('newQuoteCategory').value = '';
 }
+
+// Function to display quotes on the page
+function displayQuotes(filteredQuotes) {
+  const quoteDisplay = document.getElementById('quoteDisplay');
+  quoteDisplay.innerHTML = ''; // Clear existing quotes
+
+  filteredQuotes.forEach(quote => {
+    const quoteDiv = document.createElement('div');
+    quoteDiv.textContent = `"${quote.text}" - ${quote.category}`;
+    quoteDisplay.appendChild(quoteDiv);
+  });
+}
+
+// Function to export quotes to a JSON file
+function exportToJsonFile() {
+  const data = JSON.stringify(quotes, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'quotes.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// Function to import quotes from a JSON file
+function importFromJsonFile(event) {
+  const fileReader = new FileReader();
+  fileReader.onload = function(event) {
+    const importedQuotes = JSON.parse(event.target.result);
+    quotes.push(...importedQuotes);
+    saveQuotes();
+    displayQuotes(quotes);
+    alert('Quotes imported successfully!');
+  };
+  fileReader.readAsText(event.target.files[0]);
+}
+
+// Function to save user preferences to sessionStorage (optional)
+function saveUserPreferences() {
+  const lastQuoteIndex = quotes.length - 1;  // Save index of last added quote
+  sessionStorage.setItem('lastQuoteIndex', lastQuoteIndex);
+}
+
+// Function to load user preferences from sessionStorage (optional)
+function loadUserPreferences() {
+  const lastQuoteIndex = sessionStorage.getItem('lastQuoteIndex');
+  if (lastQuoteIndex !== null) {
+    alert(`Your last viewed quote was at index: ${lastQuoteIndex}`);
+  }
+}
+
+// Load quotes from localStorage when the page loads
+window.onload = function() {
+  loadQuotes();
+  loadUserPreferences();
+};
+
 
 
 // Creating a Dynamic Content Filtering System Using Web Storage and JSON
