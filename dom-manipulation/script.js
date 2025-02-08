@@ -417,9 +417,52 @@ function displayRandomQuote() {
   }
 }
 
+// Function to add a new quote and send it to the server (via POST)
+async function addQuote() {
+  const newQuoteText = document.getElementById('newQuoteText').value;
+  const newQuoteCategory = document.getElementById('newQuoteCategory').value;
+
+  if (!newQuoteText || !newQuoteCategory) {
+    alert('Please enter both quote text and category.');
+    return;
+  }
+
+  const newQuote = {
+    id: Date.now(), // Unique ID based on current timestamp
+    text: newQuoteText,
+    category: newQuoteCategory
+  };
+
+  // Add the new quote to the local quotes array
+  quotes.push(newQuote);
+  saveQuotes();
+  displayQuotes(quotes);
+
+  // Send the new quote to the server using POST
+  try {
+    const response = await fetch(SERVER_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json' // Set content type to JSON
+      },
+      body: JSON.stringify(newQuote) // Send the new quote as JSON in the body
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add quote to the server.');
+    }
+
+    const serverResponse = await response.json();
+    console.log('New quote added to server:', serverResponse);
+    alert('Quote added and synced with the server!');
+  } catch (error) {
+    console.error('Error posting quote to server:', error);
+    alert('Failed to add the quote to the server.');
+  }
+}
+
 // Load quotes from local storage on page load
 window.onload = function () {
   loadQuotes();
   displayQuotes(quotes);
 };
-
